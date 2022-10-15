@@ -48,11 +48,4 @@ public class PublisherController {
 
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<PublisherDTO> put(@PathVariable Long id, @RequestBody PublisherDTO publisher) {
-
-        return service.put(id, publisher);
-
-    }
-
 }

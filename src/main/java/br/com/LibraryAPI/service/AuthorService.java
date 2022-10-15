@@ -1,6 +1,7 @@
 package br.com.LibraryAPI.service;
 
 import br.com.LibraryAPI.dto.AuthorDTO;
+import br.com.LibraryAPI.mapper.AuthorMapper;
 import br.com.LibraryAPI.model.Author;
 import br.com.LibraryAPI.repository.AuthorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,11 +11,13 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class AuthorService {
 
     private AuthorRepository repository;
+    private final static AuthorMapper mapper = AuthorMapper.INSTANCE;
 
     @Autowired
     public AuthorService(AuthorRepository repository) {
@@ -25,24 +28,24 @@ public class AuthorService {
 
     public List<AuthorDTO> get() {
 
-        return AuthorDTO.toDTO(repository.findAll());
+        return repository.findAll().stream().map(mapper::toDTO).collect(Collectors.toList());
 
     }
 
     public ResponseEntity<AuthorDTO> getById(Long id) {
 
         Author author = repository.findById(id).get();
-        return ResponseEntity.ok().body(new AuthorDTO(author));
+        return ResponseEntity.ok().body(mapper.toDTO(author));
 
     }
 
     public ResponseEntity<AuthorDTO> post(AuthorDTO authorDTO, UriComponentsBuilder uriBuilder) {
 
-        Author authorEntity = authorDTO.toModel();
+        Author authorToSave = mapper.toModel(authorDTO);
+        Author createdAuthor = repository.save(authorToSave);
 
-        repository.save(authorEntity);
-        URI uri = uriBuilder.path("/Author/{id}").buildAndExpand(authorEntity.getId()).toUri();
-        return ResponseEntity.created(uri).body(new AuthorDTO(authorEntity));
+        URI uri = uriBuilder.path("/Author/{id}").buildAndExpand(createdAuthor.getId()).toUri();
+        return ResponseEntity.created(uri).body(mapper.toDTO(createdAuthor));
 
     }
 
@@ -52,15 +55,12 @@ public class AuthorService {
 
     }
 
-    public ResponseEntity<AuthorDTO> patch(Long id, AuthorDTO authorDTO) {
+    public Author verifyIfExistsAndGet(Long id) {
 
         Author author = repository.findById(id).get();
-            author.setName(authorDTO.getName());
-            author.setAge(authorDTO.getAge());
 
-        repository.save(author);
-
-        return ResponseEntity.ok().body(new AuthorDTO(author));
+        return author;
 
     }
+
 }

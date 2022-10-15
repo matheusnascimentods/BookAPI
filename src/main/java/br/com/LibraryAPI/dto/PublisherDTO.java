@@ -8,8 +8,6 @@ import lombok.NoArgsConstructor;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @AllArgsConstructor @NoArgsConstructor @Data
 public class PublisherDTO {
@@ -23,18 +21,6 @@ public class PublisherDTO {
 
         this.id = publisher.getId();
         this.name = publisher.getName();
-
-    }
-
-    public static List<PublisherDTO> toDTO(List<Publisher> publishers) {
-
-        return publishers.stream().map(PublisherDTO::new).collect(Collectors.toList());
-
-    }
-
-    public Publisher toModel() {
-
-        return new Publisher(this.name);
 
     }
 

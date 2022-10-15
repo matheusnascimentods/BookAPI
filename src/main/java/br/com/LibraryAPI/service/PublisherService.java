@@ -1,6 +1,7 @@
 package br.com.LibraryAPI.service;
 
 import br.com.LibraryAPI.dto.PublisherDTO;
+import br.com.LibraryAPI.mapper.PublisherMapper;
 import br.com.LibraryAPI.model.Publisher;
 import br.com.LibraryAPI.repository.PublisherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,11 +11,13 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class PublisherService {
 
     private PublisherRepository repository;
+    private final static PublisherMapper mapper = PublisherMapper.INSTANCE;
 
     @Autowired
     public PublisherService(PublisherRepository repository) {
@@ -25,25 +28,24 @@ public class PublisherService {
 
     public List<PublisherDTO> get() {
 
-        return PublisherDTO.toDTO(repository.findAll());
+        return repository.findAll().stream().map(mapper::toDTO).collect(Collectors.toList());
 
     }
 
     public ResponseEntity<PublisherDTO> getById(Long id) {
 
         Publisher publisher = repository.findById(id).get();
-        return ResponseEntity.ok().body(new PublisherDTO(publisher));
+        return ResponseEntity.ok().body(mapper.toDTO(publisher));
 
     }
 
     public ResponseEntity<PublisherDTO> post(PublisherDTO publisherDTO, UriComponentsBuilder uriBuilder) {
 
-        Publisher publisher = publisherDTO.toModel();
-        repository.save(publisher);
+        Publisher publisheToCreate = mapper.toModel(publisherDTO);
+        Publisher createdPublisher = repository.save(publisheToCreate);
 
-        URI uri = uriBuilder.path("/Publisher/{id}").buildAndExpand(publisher.getId()).toUri();
-
-        return ResponseEntity.created(uri).body(new PublisherDTO(publisher));
+        URI uri = uriBuilder.path("Authors/{id}").buildAndExpand(createdPublisher.getId()).toUri();
+        return ResponseEntity.created(uri).body(mapper.toDTO(createdPublisher));
 
     }
 
@@ -53,14 +55,11 @@ public class PublisherService {
 
     }
 
-    public ResponseEntity<PublisherDTO> put(Long id, PublisherDTO publisher) {
+    public Publisher verifyIfExistsAndGet(Long id) {
 
-        Publisher publisherModel = repository.findById(id).get();
-            publisherModel.setName(publisher.getName());
+        Publisher publisher = repository.findById(id).get();
 
-        repository.save(publisherModel);
-
-        return ResponseEntity.ok().body(new PublisherDTO(publisherModel));
+        return publisher;
 
     }
 }

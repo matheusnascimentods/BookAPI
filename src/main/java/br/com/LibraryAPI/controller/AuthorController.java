@@ -49,11 +49,4 @@ public class AuthorController {
 
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<AuthorDTO> patch(@PathVariable Long id, @RequestBody AuthorDTO authorDTO) {
-
-        return service.patch(id, authorDTO);
-
-    }
-
 }
