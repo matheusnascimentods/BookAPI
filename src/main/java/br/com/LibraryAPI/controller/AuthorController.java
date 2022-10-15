@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.util.List;
 
@@ -35,14 +36,14 @@ public class AuthorController {
 
     }
 
-    @PostMapping @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping @ResponseStatus(HttpStatus.CREATED) @Transactional
     public ResponseEntity<AuthorDTO> post(@RequestBody @Valid AuthorDTO author, UriComponentsBuilder uri) {
 
         return service.post(author, uri);
 
     }
 
-    @DeleteMapping("/{id}") @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{id}") @ResponseStatus(HttpStatus.NO_CONTENT) @Transactional
     public void delete(@PathVariable Long id) {
 
         service.delete(id);

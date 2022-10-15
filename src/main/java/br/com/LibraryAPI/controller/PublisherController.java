@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 @RestController @RequestMapping("Publisher")
@@ -34,14 +35,14 @@ public class PublisherController {
 
     }
 
-    @PostMapping @ResponseStatus(HttpStatus.CREATED)
+    @PostMapping @ResponseStatus(HttpStatus.CREATED) @Transactional
     public ResponseEntity<PublisherDTO> post(@RequestBody PublisherDTO publisherDTO, UriComponentsBuilder uri) {
 
         return service.post(publisherDTO, uri);
 
     }
 
-    @DeleteMapping("/{id}") @ResponseStatus(HttpStatus.NO_CONTENT)
+    @DeleteMapping("/{id}") @ResponseStatus(HttpStatus.NO_CONTENT) @Transactional
     public void delete(@PathVariable Long id) {
 
         service.delete(id);

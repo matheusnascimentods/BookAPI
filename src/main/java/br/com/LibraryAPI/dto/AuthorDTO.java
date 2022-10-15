@@ -1,6 +1,5 @@
 package br.com.LibraryAPI.dto;
 
-import br.com.LibraryAPI.model.Author;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,22 +17,5 @@ public class AuthorDTO {
 
     @NotNull
     private int age;
-
-    public AuthorDTO(Author author) {
-
-        this.id = author.getId();
-        this.name = author.getName();
-        this.age = author.getAge();
-
-    }
-
-    public Author modelToBook() {
-
-        Author author = new Author(this.name, this.age);
-        author.setId(this.id);
-
-        return author;
-
-    }
 
 }

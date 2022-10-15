@@ -1,6 +1,5 @@
 package br.com.LibraryAPI.dto;
 
-import br.com.LibraryAPI.model.Publisher;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,21 +15,5 @@ public class PublisherDTO {
 
     @NotNull @NotEmpty @Size(max = 205)
     private String name;
-
-    public PublisherDTO(Publisher publisher) {
-
-        this.id = publisher.getId();
-        this.name = publisher.getName();
-
-    }
-
-    public Publisher modelToBook() {
-
-        Publisher publisher = new Publisher(this.name);
-        publisher.setId(this.id);
-
-        return publisher;
-
-    }
 
 }

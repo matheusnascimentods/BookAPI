@@ -5,29 +5,28 @@ import lombok.*;
 import javax.persistence.*;
 
 @Entity @Table(name = "Books")
-@AllArgsConstructor @NoArgsConstructor @RequiredArgsConstructor
-@Data
+@AllArgsConstructor @NoArgsConstructor @Data
 public class Book {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @Column(nullable = false) @NonNull
+    @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false) @NonNull
+    @Column(nullable = false)
     private String description;
 
-    @Column(columnDefinition = "Integer default 0") @NonNull
+    @Column(columnDefinition = "Integer default 0")
     private int pages;
 
-    @Column(columnDefinition = "Integer default 0") @NonNull
+    @Column(columnDefinition = "Integer default 0")
     private int chapters;
 
-    @ManyToOne(cascade = {CascadeType.MERGE}) @NonNull
+    @ManyToOne(cascade = {CascadeType.MERGE})
     private Author author;
 
-    @ManyToOne(cascade = {CascadeType.MERGE}) @NonNull
+    @ManyToOne(cascade = {CascadeType.MERGE})
     private Publisher publisher;
 
 }
