@@ -23,7 +23,7 @@ public class BookRequestDTO {
     @NotNull @Max(3000)
     private Long pages;
 
-    @NotNull @Max(200)
+    @NotNull @Max(3000)
     private Long chapters;
 
     @NotNull

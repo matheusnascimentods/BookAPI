@@ -1,9 +1,10 @@
 package br.com.LibraryAPI.model;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
 @Entity @Table(name="Authors")
@@ -13,7 +14,7 @@ public class Author {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @NotEmpty
+    @Column(nullable = false)
     private String name;
 
     @Column(columnDefinition = "Integer default 0")

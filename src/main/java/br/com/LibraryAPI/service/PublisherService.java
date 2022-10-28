@@ -1,5 +1,7 @@
 package br.com.LibraryAPI.service;
 
+import br.com.LibraryAPI.exception.Exceptions.PublisherAlreadyExistsException;
+import br.com.LibraryAPI.exception.Exceptions.PublisherNotFoundException;
 import br.com.LibraryAPI.dto.PublisherDTO;
 import br.com.LibraryAPI.mapper.PublisherMapper;
 import br.com.LibraryAPI.model.Publisher;
@@ -16,7 +18,7 @@ import java.util.stream.Collectors;
 @Service
 public class PublisherService {
 
-    private PublisherRepository repository;
+    private final PublisherRepository repository;
     private final static PublisherMapper mapper = PublisherMapper.INSTANCE;
 
     @Autowired
@@ -34,7 +36,7 @@ public class PublisherService {
 
     public ResponseEntity<PublisherDTO> getById(Long id) {
 
-        Publisher publisher = repository.findById(id).get();
+        Publisher publisher = repository.findById(id).orElseThrow(() -> new PublisherNotFoundException(id));
         return ResponseEntity.ok().body(mapper.toDTO(publisher));
 
     }
@@ -42,6 +44,8 @@ public class PublisherService {
     public ResponseEntity<PublisherDTO> post(PublisherDTO publisherDTO, UriComponentsBuilder uriBuilder) {
 
         Publisher publisheToCreate = mapper.toModel(publisherDTO);
+        verifyIfExists(publisheToCreate.getName());
+
         Publisher createdPublisher = repository.save(publisheToCreate);
 
         URI uri = uriBuilder.path("Authors/{id}").buildAndExpand(createdPublisher.getId()).toUri();
@@ -51,15 +55,21 @@ public class PublisherService {
 
     public void delete(Long id) {
 
+        verifyIfExistsAndGet(id);
         repository.deleteById(id);
 
     }
 
     public Publisher verifyIfExistsAndGet(Long id) {
 
-        Publisher publisher = repository.findById(id).get();
-
-        return publisher;
+        return repository.findById(id).orElseThrow(() -> new PublisherNotFoundException(id));
 
     }
+
+    public void verifyIfExists(String name) {
+
+        repository.findByName(name).ifPresent(publisher -> { throw new PublisherAlreadyExistsException(name); });
+
+    }
+
 }

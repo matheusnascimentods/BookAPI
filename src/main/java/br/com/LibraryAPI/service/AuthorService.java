@@ -1,5 +1,7 @@
 package br.com.LibraryAPI.service;
 
+import br.com.LibraryAPI.exception.Exceptions.AuthorAlreadyExistsException;
+import br.com.LibraryAPI.exception.Exceptions.AuthorNotFoundException;
 import br.com.LibraryAPI.dto.AuthorDTO;
 import br.com.LibraryAPI.mapper.AuthorMapper;
 import br.com.LibraryAPI.model.Author;
@@ -16,7 +18,7 @@ import java.util.stream.Collectors;
 @Service
 public class AuthorService {
 
-    private AuthorRepository repository;
+    private final AuthorRepository repository;
     private final static AuthorMapper mapper = AuthorMapper.INSTANCE;
 
     @Autowired
@@ -34,7 +36,7 @@ public class AuthorService {
 
     public ResponseEntity<AuthorDTO> getById(Long id) {
 
-        Author author = repository.findById(id).get();
+        Author author = repository.findById(id).orElseThrow(() -> new AuthorNotFoundException(id));
         return ResponseEntity.ok().body(mapper.toDTO(author));
 
     }
@@ -42,6 +44,8 @@ public class AuthorService {
     public ResponseEntity<AuthorDTO> post(AuthorDTO authorDTO, UriComponentsBuilder uriBuilder) {
 
         Author authorToSave = mapper.toModel(authorDTO);
+        verifyIfExists(authorToSave.getName());
+
         Author createdAuthor = repository.save(authorToSave);
 
         URI uri = uriBuilder.path("/Author/{id}").buildAndExpand(createdAuthor.getId()).toUri();
@@ -51,16 +55,20 @@ public class AuthorService {
 
     public void delete(Long id) {
 
+        verifyIfExistsAndGet(id);
         repository.deleteById(id);
 
     }
 
     public Author verifyIfExistsAndGet(Long id) {
 
-        Author author = repository.findById(id).get();
+        return repository.findById(id).orElseThrow(() -> new AuthorNotFoundException(id));
 
-        return author;
+    }
 
+    public void verifyIfExists(String name) {
+
+        repository.findByName(name).ifPresent(author -> { throw new AuthorAlreadyExistsException(name); });
     }
 
 }

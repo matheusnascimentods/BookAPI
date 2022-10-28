@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController @RequestMapping("Publisher")
@@ -36,7 +37,7 @@ public class PublisherController {
     }
 
     @PostMapping @ResponseStatus(HttpStatus.CREATED) @Transactional
-    public ResponseEntity<PublisherDTO> post(@RequestBody PublisherDTO publisherDTO, UriComponentsBuilder uri) {
+    public ResponseEntity<PublisherDTO> post(@RequestBody @Valid PublisherDTO publisherDTO, UriComponentsBuilder uri) {
 
         return service.post(publisherDTO, uri);
 

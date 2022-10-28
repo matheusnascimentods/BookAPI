@@ -9,11 +9,13 @@ import br.com.LibraryAPI.service.AuthorService;
 import br.com.LibraryAPI.service.BookService;
 import br.com.LibraryAPI.service.PublisherService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController @RequestMapping("Book")
@@ -44,13 +46,13 @@ public class BookController {
     }
 
     @PostMapping @Transactional
-    public ResponseEntity<BookResponseDTO> post(@RequestBody BookRequestDTO requestDTO, UriComponentsBuilder uri) {
+    public ResponseEntity<BookResponseDTO> post(@RequestBody @Valid BookRequestDTO requestDTO, UriComponentsBuilder uri) {
 
         return service.post(requestDTO, uri);
 
     }
 
-    @DeleteMapping("/{id}") @Transactional
+    @DeleteMapping("/{id}") @ResponseStatus(HttpStatus.NO_CONTENT) @Transactional
     public void delete(@PathVariable Long id) {
 
         service.delete(id);

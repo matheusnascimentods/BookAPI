@@ -1,5 +1,7 @@
 package br.com.LibraryAPI.service;
 
+import br.com.LibraryAPI.exception.Exceptions.BookAlreadyExistsException;
+import br.com.LibraryAPI.exception.Exceptions.BookNotFoundException;
 import br.com.LibraryAPI.dto.BookRequestDTO;
 import br.com.LibraryAPI.dto.BookResponseDTO;
 import br.com.LibraryAPI.mapper.BookMapper;
@@ -21,9 +23,9 @@ public class BookService {
 
     private final static BookMapper mapper = BookMapper.INTANCE;
 
-    private BookRepository repository;
-    private AuthorService authorService;
-    private PublisherService publisherService;
+    private final BookRepository repository;
+    private final AuthorService authorService;
+    private final PublisherService publisherService;
 
     @Autowired
     public BookService(BookRepository bookRepository, AuthorService authorService, PublisherService publisherService) {
@@ -42,7 +44,7 @@ public class BookService {
 
     public ResponseEntity<BookResponseDTO> getById(Long id) {
 
-        Book book = repository.findById(id).get();
+        Book book = repository.findById(id).orElseThrow(() -> new BookNotFoundException(id));
         return ResponseEntity.ok().body(mapper.toDTO(book));
 
     }
@@ -54,6 +56,9 @@ public class BookService {
 
         Book bookToCreate = mapper.toModel(requestDTO);
         bookToCreate.setAuthor(author);
+
+        verifyIfExists(bookToCreate.getTitle());
+
         bookToCreate.setPublisher(publisher);
 
         Book createdBook = repository.save(bookToCreate);
@@ -65,13 +70,14 @@ public class BookService {
 
     public void delete(Long id) {
 
+        verifyIfExistsAndGet(id);
         repository.deleteById(id);
 
     }
 
-    public ResponseEntity<BookResponseDTO> put(Long Id, BookRequestDTO requestDTO) {
+    public ResponseEntity<BookResponseDTO> put(Long id, BookRequestDTO requestDTO) {
 
-        Book book = repository.findById(Id).get();
+        Book book = repository.findById(id).orElseThrow(() -> new BookNotFoundException(id));
         book.setTitle(requestDTO.getTitle());
         book.setDescription(requestDTO.getDescription());
         book.setPages(Math.toIntExact(requestDTO.getPages()));
@@ -82,6 +88,18 @@ public class BookService {
         Book updatedBook = repository.save(book);
 
         return ResponseEntity.ok().body(mapper.toDTO(updatedBook));
+
+    }
+
+    public Book verifyIfExistsAndGet(Long id) {
+
+        return repository.findById(id).orElseThrow(() -> new BookNotFoundException(id));
+
+    }
+
+    public void verifyIfExists(String title) {
+
+        repository.findByTitle(title).ifPresent(book -> { throw new BookAlreadyExistsException(title); });
 
     }
 
