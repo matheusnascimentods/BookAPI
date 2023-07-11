@@ -33,20 +33,21 @@ public class BookService {
         this.repository = bookRepository;
         this.authorService = authorService;
         this.publisherService = publisherService;
-
     }
 
     public List<BookResponseDTO> get() {
 
         return repository.findAll().stream().map(mapper::toDTO).collect(Collectors.toList());
-
     }
 
     public ResponseEntity<BookResponseDTO> getById(Long id) {
 
-        Book book = repository.findById(id).orElseThrow(() -> new BookNotFoundException(id));
-        return ResponseEntity.ok().body(mapper.toDTO(book));
+        if (!repository.existsById(id)) {
+            throw new BookNotFoundException(id);
+        }
 
+        Book book = repository.findById(id).get();
+        return ResponseEntity.ok().body(mapper.toDTO(book));
     }
 
     public ResponseEntity<BookResponseDTO> post(BookRequestDTO requestDTO, UriComponentsBuilder uriBuilder) {
@@ -65,19 +66,24 @@ public class BookService {
 
         URI uri = uriBuilder.path("Book/{id}").buildAndExpand(createdBook.getId()).toUri();
         return ResponseEntity.created(uri).body(mapper.toDTO(createdBook));
-
     }
 
     public void delete(Long id) {
 
-        verifyIfExistsAndGet(id);
-        repository.deleteById(id);
+        if (!repository.existsById(id)) {
+            throw new BookNotFoundException(id);
+        }
 
+        repository.deleteById(id);
     }
 
     public ResponseEntity<BookResponseDTO> put(Long id, BookRequestDTO requestDTO) {
 
-        Book book = repository.findById(id).orElseThrow(() -> new BookNotFoundException(id));
+        if (!repository.existsById(id)) {
+            throw new BookNotFoundException(id);
+        }
+
+        Book book = repository.findById(id).get();
         book.setTitle(requestDTO.getTitle());
         book.setDescription(requestDTO.getDescription());
         book.setPages(Math.toIntExact(requestDTO.getPages()));
@@ -88,12 +94,6 @@ public class BookService {
         Book updatedBook = repository.save(book);
 
         return ResponseEntity.ok().body(mapper.toDTO(updatedBook));
-
-    }
-
-    public Book verifyIfExistsAndGet(Long id) {
-
-        return repository.findById(id).orElseThrow(() -> new BookNotFoundException(id));
 
     }
 

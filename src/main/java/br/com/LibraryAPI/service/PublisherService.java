@@ -36,7 +36,11 @@ public class PublisherService {
 
     public ResponseEntity<PublisherDTO> getById(Long id) {
 
-        Publisher publisher = repository.findById(id).orElseThrow(() -> new PublisherNotFoundException(id));
+        if (!repository.existsById(id)) {
+            throw new PublisherNotFoundException(id);
+        }
+
+        Publisher publisher = repository.findById(id).get();
         return ResponseEntity.ok().body(mapper.toDTO(publisher));
 
     }
@@ -54,6 +58,10 @@ public class PublisherService {
     }
 
     public void delete(Long id) {
+
+        if (!repository.existsById(id)) {
+            throw new PublisherNotFoundException(id);
+        }
 
         verifyIfExistsAndGet(id);
         repository.deleteById(id);

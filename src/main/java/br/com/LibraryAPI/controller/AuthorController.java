@@ -13,7 +13,7 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.util.List;
 
-@RestController @RequestMapping("Author")
+@RestController @RequestMapping("author")
 public class AuthorController {
 
     @Autowired

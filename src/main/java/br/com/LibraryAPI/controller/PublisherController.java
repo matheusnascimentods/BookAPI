@@ -13,7 +13,7 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.util.List;
 
-@RestController @RequestMapping("Publisher")
+@RestController @RequestMapping("publisher")
 public class PublisherController {
 
     @Autowired

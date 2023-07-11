@@ -36,9 +36,12 @@ public class AuthorService {
 
     public ResponseEntity<AuthorDTO> getById(Long id) {
 
-        Author author = repository.findById(id).orElseThrow(() -> new AuthorNotFoundException(id));
-        return ResponseEntity.ok().body(mapper.toDTO(author));
+        if (!repository.existsById(id)) {
+            throw new AuthorNotFoundException(id);
+        }
 
+        Author author = repository.findById(id).get();
+        return ResponseEntity.ok().body(mapper.toDTO(author));
     }
 
     public ResponseEntity<AuthorDTO> post(AuthorDTO authorDTO, UriComponentsBuilder uriBuilder) {
@@ -55,9 +58,11 @@ public class AuthorService {
 
     public void delete(Long id) {
 
-        verifyIfExistsAndGet(id);
-        repository.deleteById(id);
+        if (!repository.existsById(id)) {
+            throw new AuthorNotFoundException(id);
+        }
 
+        repository.deleteById(id);
     }
 
     public Author verifyIfExistsAndGet(Long id) {

@@ -18,7 +18,7 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 import java.util.List;
 
-@RestController @RequestMapping("Book")
+@RestController @RequestMapping("book")
 public class BookController {
 
     @Autowired
