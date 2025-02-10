@@ -1,6 +1,15 @@
 # BookAPI
-API de biblioteca feita em Java com Spring Boot
+Este repositório contém uma API RESTful para gerenciamento de livros, desenvolvida em Java com Spring Boot. A aplicação modela três entidades principais: Livro, Autor e Editora, estabelecendo relacionamentos entre elas para refletir a estrutura de um catálogo literário. A API implementa validações robustas para garantir a integridade dos dados, assegurando que apenas informações consistentes sejam armazenadas no banco de dados.
+Este projeto foi desenvolvido para consolidar conhecimentos em desenvolvimento de APIs RESTful com Spring Boot, integrando práticas recomendadas e ferramentas modernas para a construção de aplicações robustas e escaláveis.
 
+## Principais Tecnologias e Ferramentas Utilizadas:
+
+* MapStruct: Utilizado para mapeamento eficiente entre as entidades e seus respectivos DTOs (Data Transfer Objects), facilitando a conversão de dados entre camadas da aplicação.
+
+* Lombok: Empregado para reduzir a verbosidade do código, gerando automaticamente métodos como getters, setters e construtores, promovendo um código mais limpo e conciso.
+
+* MySQL: Escolhido como banco de dados relacional para persistência dos dados, garantindo robustez e escalabilidade.
+  
 ## Instalação
 
 Faça o clone do repositório:
